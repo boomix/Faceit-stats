@@ -41,8 +41,8 @@ async function onFaceITProfileLoaded(result)
         id          = profile.guid;
         username    = profile.nickname;
         country     = profile.country;
-        level       = await getLevel(profile.games, 'csgo');
-        levelImg    = await chrome.runtime.getURL(`./img/levels/${level}.png`);
+        level       = getLevel(profile.games, 'csgo');
+        levelImg    = chrome.runtime.getURL(`./img/levels/${level}.png`);
 
         updateDOM();
         
@@ -60,7 +60,7 @@ async function onFaceITProfileLoaded(result)
         // Get additional data
         chrome.runtime.sendMessage('https://api.faceit.com/users/v1/nicknames/' + username,
             result => {
-                membership  = (result.memberships.includes('csgo') ? 'Premium' : 'Free')
+                membership  = ((result.memberships.includes('csgo') || result.memberships.includes('premium')) ? 'Premium' : 'Free')
                 elo         = result.games.csgo.faceit_elo;
                 registred = new Date(result.created_at).toLocaleString('en-us', {year: 'numeric', month: '2-digit', day: '2-digit'});
                 updateDOM();
@@ -151,16 +151,15 @@ function updateDOM() {
 
 function getLevel(games, searchGame) 
 {
-    for (const [index, game] of games.entries())
+    let level = 1;
+    games.map((game) => 
     {
         if (game.name === searchGame) {
-            return game.skill_level;
+            level = game.skill_level;
         }
+    });
 
-        if ((index + 1) === games.length) {
-            return 1;
-        }
-    }
+    return level;
 }
 
 /**
@@ -173,17 +172,15 @@ async function getMainProfile(result)
     let profile = null;
     const allPlayers = result.players.results;
     if (allPlayers.length > 1) {
-        for (const [index, user] of allPlayers.entries()) {
+        allPlayers.map(async (user, index) => {
             if (user.games.length > 0) {
-               
-                for (const game of user.game) {
+                user.games.map(async (game) => {
                     if (game.name == 'csgo') {
                         profile = allPlayers[index];
                     }
-                }
-
+                });
             }
-        }
+        });
     } else {
         profile = allPlayers[0];
     }
