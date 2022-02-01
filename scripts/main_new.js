@@ -63,7 +63,6 @@ async function onFaceITProfileLoaded(result)
                 membership  = (result.memberships.includes('csgo') ? 'Premium' : 'Free')
                 elo         = result.games.csgo.faceit_elo;
                 registred = new Date(result.created_at).toLocaleString('en-us', {year: 'numeric', month: '2-digit', day: '2-digit'});
-                console.log(result); 
                 updateDOM();
             }
         );
@@ -82,7 +81,6 @@ async function onFaceITProfileLoaded(result)
     }
 
 }
-
 
 
 function updateDOM() {
