@@ -1,0 +1,55 @@
+{
+	"update_url": "https://clients2.google.com/service/update2/crx",
+	"name": "FACE-X",
+	"icons": {
+		"16": "img/logo.png",
+		"48": "img/logo.png",
+		"128": "img/logo.png"
+	},
+	"version": "2.0",
+	"manifest_version": 3,
+	"description": "FACE-X is a Google Chrome extension that displays a users stats on FACEIT on their Steam profile.",
+	"action": {
+		"default_icon": "img/logo.png",
+		"default_title": "FACE-X"
+	},
+	"background": {
+		"service_worker": "scripts/background.js"
+	},
+	"host_permissions": [
+		"https://api.faceit.com/*"
+	],
+	"content_scripts": [
+		{
+			"matches": [
+				"*://*.steamcommunity.com/id/*",
+				"*://*.steamcommunity.com/profiles/*"
+			],
+			"exclude_matches": [
+				"*://*.steamcommunity.com/id/*/allcomments*",
+				"*://*.steamcommunity.com/profiles/*/allcomments*"
+			],
+			"css": [
+				"style.css"
+			],
+			"js": [
+				"scripts/main_new.js"
+			]
+		}
+	],
+	"web_accessible_resources": [{
+		"resources": [
+			"img/levels/1.png",
+			"img/levels/2.png",
+			"img/levels/3.png",
+			"img/levels/4.png",
+			"img/levels/5.png",
+			"img/levels/6.png",
+			"img/levels/7.png",
+			"img/levels/8.png",
+			"img/levels/9.png",
+			"img/levels/10.png"
+		],
+		"matches": ["<all_urls>"]
+	}]
+}
