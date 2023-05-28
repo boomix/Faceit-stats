@@ -3,23 +3,24 @@ const steamid = getSteamID();
 loadFaceITProfile(steamid);
 
 // Create global variables
-let id, 
-level, 
-levelImg,
-username, 
-country, 
-banned, 
-banReason,
-membership = '', 
-elo = '', 
-avgHS = '-',
-avgKD = '-', 
-matches = '-', 
-winrate = '-',
-registred = '';
+let id,
+    level,
+    levelImg,
+    username,
+    country,
+    banned,
+    banReason,
+    membership = '',
+    elo = '',
+    avgHS = '-',
+    avgKD = '-',
+    matches = '-',
+    winrate = '-',
+    avgKR = '-',
+    avgKills = '-',
+    registred = '';
 
-function loadFaceITProfile(steamid) 
-{
+function loadFaceITProfile(steamid) {
     // Check if steamID was recieved successfully
     if (steamid === null) {
         return;
@@ -31,27 +32,26 @@ function loadFaceITProfile(steamid)
     );
 }
 
-async function onFaceITProfileLoaded(result) 
-{
+async function onFaceITProfileLoaded(result) {
     const profile = await getMainProfile(result);
-    
+
     if (profile !== null) {
 
         //Fill in start data
-        id          = profile.guid;
-        username    = profile.nickname;
-        country     = profile.country;
-        level       = getLevel(profile.games, 'csgo');
-        levelImg    = chrome.runtime.getURL(`./img/levels/${level}.png`);
+        id = profile.guid;
+        username = profile.nickname;
+        country = profile.country;
+        level = getLevel(profile.games, 'csgo');
+        levelImg = chrome.runtime.getURL(`./img/levels/${level}.svg`);
 
         updateDOM();
-        
+
         // Check for bans
         chrome.runtime.sendMessage('https://api.faceit.com/sheriff/v1/bans/' + id,
             result => {
                 if (result[0]) {
-                    banned      = true;
-                    banReason   = result[0].reason; 
+                    banned = true;
+                    banReason = result[0].reason;
                     updateDOM();
                 }
             }
@@ -60,9 +60,9 @@ async function onFaceITProfileLoaded(result)
         // Get additional data
         chrome.runtime.sendMessage('https://api.faceit.com/users/v1/nicknames/' + username,
             result => {
-                membership  = ((result.memberships.includes('csgo') || result.memberships.includes('premium')) ? 'Premium' : 'Free')
-                elo         = result.games.csgo.faceit_elo;
-                registred = new Date(result.created_at).toLocaleString('en-us', {year: 'numeric', month: '2-digit', day: '2-digit'});
+                membership = ((result.memberships.includes('csgo') || result.memberships.includes('premium')) ? 'Premium' : 'Free')
+                elo = result.games.csgo.faceit_elo;
+                registred = new Date(result.created_at).toLocaleString('en-us', { year: 'numeric', month: '2-digit', day: '2-digit' });
                 updateDOM();
             }
         );
@@ -70,10 +70,35 @@ async function onFaceITProfileLoaded(result)
         // Get lifetime CS:GO stats
         chrome.runtime.sendMessage('https://api.faceit.com/stats/v1/stats/users/' + id + '/games/csgo',
             result => {
-                avgHS   = result.lifetime.k8;
-                avgKD   = result.lifetime.k5;
+                // avgHS = result.lifetime.k8;
+                // avgKD = result.lifetime.k5;
                 matches = result.lifetime.m1;
-                winrate =  result.lifetime.k6;
+                // winrate = result.lifetime.k6;
+                updateDOM();
+            }
+        );
+
+        // Get last 20 game CS:GO stats
+        chrome.runtime.sendMessage(`https://api.faceit.com/stats/v1/stats/time/users/${id}/games/csgo?size=20`,
+            json => {
+                let kills = 0, HS = 0, divid = 0, KD = 0, KR = 0;
+                for (i = 0; i < json.length; i++) {
+                    if (json[i].gameMode !== '5v5') {
+                        length = length + 1;
+                    } else {
+                        divid = divid + 1;
+                        kills = parseInt(json[i].i6) + kills;
+                        HS = parseInt(json[i].c4 * 100) + HS;
+                        KD = parseInt(json[i].c2 * 100) + KD;
+                        KR = parseInt(json[i].c3 * 100) + KR;
+                    }
+                }
+
+                avgKills = Math.round(kills / divid);
+                avgHS = Math.round(HS / divid / 100);
+                avgKD = (KD / divid / 100).toFixed(2);
+                avgKR = (KR / divid / 100).toFixed(2);
+
                 updateDOM();
             }
         );
@@ -81,6 +106,8 @@ async function onFaceITProfileLoaded(result)
     }
 
 }
+
+
 
 
 function updateDOM() {
@@ -92,7 +119,7 @@ function updateDOM() {
     textNode.id = 'facex';
     textNode.innerHTML = `
     <div class="profile_customization">
-        <div class="profile_customization_header">FACE-X</div>
+        <div class="profile_customization_header">Faceit Stats <span style="color:#9b9b9b">by Eloking</span></div>
         <div class="profile_customization_block">
             <div class="favoritegroup_showcase">
                 <div class="showcase_content_bg">
@@ -112,15 +139,6 @@ function updateDOM() {
                             <div class="facex_stats_block">
                                 <div class="facex_stats_row2 favoritegroup_stats showcase_stats_row">
                                     <div class="facex_stat showcase_stat favoritegroup_online">
-                                        <div class="value">${avgHS}%</div>
-                                        <div class="label">AVG HS%</div>
-                                    </div>
-                                    <div class="facex_stat showcase_stat favoritegroup_online">
-                                        <div class="value">${avgKD}</div>
-                                        <div class="label">AVG K/D</div>
-                                    </div>
-                                    
-                                    <div class="facex_stat showcase_stat favoritegroup_online">
                                         <div class="value">${elo}</div>
                                         <div class="label">ELO</div>
                                     </div>
@@ -129,9 +147,21 @@ function updateDOM() {
                                         <div class="label">Matches</div>
                                     </div>
                                     <div class="facex_stat showcase_stat favoritegroup_online">
-                                        <div class="value">${winrate}%</div>
-                                        <div class="label">WinRate</div>
+                                        <div class="value">${avgKills}</div>
+                                        <div class="label">AVG kills</div>
                                     </div>
+                                    <div class="facex_stat showcase_stat favoritegroup_online">
+                                        <div class="value">${avgKD}</div>
+                                        <div class="label">AVG K/D</div>
+                                    </div>
+                                    <div class="facex_stat showcase_stat favoritegroup_online">
+                                        <div class="value">${avgKR}</div>
+                                        <div class="label">AVG K/R</div>
+                                    </div>
+                                    <br>
+                                    <a href="https://eloking.com/csgo/faceit-boost" target="_blank" class="facex_link">
+                                        Get better at CS:GO with Eloking →
+                                    </a>
                                     <div style="clear: left;"></div>
                                 </div>
                             </div>
@@ -145,15 +175,13 @@ function updateDOM() {
     if (document.getElementById('facex')) {
         document.getElementById('facex').innerHTML = textNode.innerHTML;
     } else {
-       customize.prepend(textNode); 
+        customize.prepend(textNode);
     }
 }
 
-function getLevel(games, searchGame) 
-{
+function getLevel(games, searchGame) {
     let level = 1;
-    games.map((game) => 
-    {
+    games.map((game) => {
         if (game.name === searchGame) {
             level = game.skill_level;
         }
@@ -167,8 +195,7 @@ function getLevel(games, searchGame)
  * @param {*} result 
  * @returns 
  */
-async function getMainProfile(result) 
-{
+async function getMainProfile(result) {
     let profile = null;
     const allPlayers = result.players.results;
     if (allPlayers.length > 1) {
@@ -184,7 +211,7 @@ async function getMainProfile(result)
     } else {
         profile = allPlayers[0];
     }
-    
+
     return profile;
 }
 
@@ -193,8 +220,7 @@ async function getMainProfile(result)
  * Gets steamID from page report popup
  * @returns string
  */
-function getSteamID() 
-{
+function getSteamID() {
     //Getting steamID from report popup
     if (document.getElementsByName("abuseID") && document.getElementsByName("abuseID")[0]) {
         return document.getElementsByName("abuseID")[0].value

@@ -1,10 +1,10 @@
 .facex_content {
     padding-left: 0px !important;
-    height:55px !important;
+    height: 55px !important;
 }
 
 .levelbox {
-    float:left;
+    float: left;
     height: 50px;
     margin-top: 4px;
     margin-right: 10px;
@@ -26,7 +26,7 @@
 }
 
 .facex_description {
-    display:block;
+    display: block;
     margin-top: -10px;
     font-size: 12px;
     text-transform: capitalize;
@@ -37,14 +37,14 @@
 }
 
 .facex_stat {
-    font-size:25px !important;
-    text-align:center;
+    font-size: 25px !important;
+    text-align: center;
 }
 
 .facex_namerow {
     max-width: 220px;
     overflow: hidden !important;
-    margin-top: 10px !important;
+    margin-top: 30px !important;
 }
 
 /* .facex_namerow > span:nth-child(1) {
@@ -57,18 +57,18 @@
 } */
 
 .facex_stats_row {
-    position:unset !important;
-    float:right;
+    position: unset !important;
+    float: right;
     margin-right: 10px;
     margin-top: -5px;
 }
 
 .facex_stats_row2 {
-    position:unset !important;
-    float:right;
+    position: unset !important;
+    float: right;
     margin-right: 10px;
     margin-top: 10px;
-    padding-top: 5px; 
+    padding-top: 5px;
     margin-bottom: 5px;
     padding-bottom: 9px;
 }
@@ -99,4 +99,22 @@
     float: left;
     width: 100%;
     margin-top: 13px;
+}
+
+.facex_link {
+    width: 100%;
+    background: green;
+    color: #fff;
+    margin-top: 10px;
+    border-radius: 5px;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    display: block;
+    text-align: center;
+    padding: 6px;
+    opacity: 0.5;
+}
+
+.facex_link:hover {
+    opacity: 1;
 }

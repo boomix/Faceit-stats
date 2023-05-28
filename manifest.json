@@ -1,17 +1,18 @@
 {
 	"update_url": "https://clients2.google.com/service/update2/crx",
-	"name": "FACE-X",
+	"name": "Faceit Stats by Eloking",
 	"icons": {
 		"16": "img/logo.png",
 		"48": "img/logo.png",
 		"128": "img/logo.png"
 	},
-	"version": "2.0",
+	"version": "3",
 	"manifest_version": 3,
-	"description": "FACE-X is a Google Chrome extension that displays a users stats on FACEIT on their Steam profile.",
+	"homepage_url": "https://eloking.com",
+	"description": "Faceit Stats by Eloking is a Google Chrome extension that displays a users stats on FACEIT on their Steam profile.",
 	"action": {
 		"default_icon": "img/logo.png",
-		"default_title": "FACE-X"
+		"default_title": "Faceit Stats by Eloking"
 	},
 	"background": {
 		"service_worker": "scripts/background.js"
@@ -37,19 +38,24 @@
 			]
 		}
 	],
-	"web_accessible_resources": [{
-		"resources": [
-			"img/levels/1.png",
-			"img/levels/2.png",
-			"img/levels/3.png",
-			"img/levels/4.png",
-			"img/levels/5.png",
-			"img/levels/6.png",
-			"img/levels/7.png",
-			"img/levels/8.png",
-			"img/levels/9.png",
-			"img/levels/10.png"
-		],
-		"matches": ["<all_urls>"]
-	}]
+	"web_accessible_resources": [
+		{
+			"resources": [
+				"img/levels/1.svg",
+				"img/levels/2.svg",
+				"img/levels/3.svg",
+				"img/levels/4.svg",
+				"img/levels/5.svg",
+				"img/levels/6.svg",
+				"img/levels/7.svg",
+				"img/levels/8.svg",
+				"img/levels/9.svg",
+				"img/levels/10.svg",
+				"img/levels/unranked.svg"
+			],
+			"matches": [
+				"<all_urls>"
+			]
+		}
+	]
 }
